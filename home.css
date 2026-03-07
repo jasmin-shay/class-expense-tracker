@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body{
 margin:0;
 height:100vh;
@@ -75,4 +76,83 @@ transition:0.3s;
 
 .start-btn:hover{
 background:#f3d6dc;
+=======
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:'Poppins', sans-serif;
+background:linear-gradient(135deg,#4b0f1a,#7b1e3c);
+}
+
+.card{
+width:900px;
+height:500px;
+background:linear-gradient(120deg,#800020,#000000);
+border-radius:20px;
+padding:40px;
+color:white;
+box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:22px;
+font-weight:600;
+letter-spacing:2px;
+}
+
+.menu a{
+text-decoration:none;
+color:white;
+margin-left:25px;
+font-size:14px;
+}
+
+.login-btn{
+border:1px solid white;
+padding:6px 14px;
+border-radius:6px;
+}
+
+.hero{
+text-align:center;
+margin-top:120px;
+}
+
+.hero h1{
+font-size:60px;
+letter-spacing:6px;
+margin-bottom:15px;
+}
+
+.hero p{
+width:60%;
+margin:auto;
+font-size:15px;
+opacity:0.9;
+}
+
+.start-btn{
+margin-top:25px;
+padding:12px 28px;
+background:white;
+color:#800020;
+border:none;
+border-radius:25px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.start-btn:hover{
+background:#f3d6dc;
+>>>>>>> 0c8568dca3fa4766446fd6e9f46f665c9dff2b75
 }
