@@ -26,7 +26,26 @@ async function init() {
     showToast("Error loading dashboard", "error");
   }
 }
+async function loadStudentProfile(){
 
+const username = localStorage.getItem("username")
+
+const { data: student, error } = await supabaseClient
+.from("students")
+.select("*")
+.eq("username", username)
+.single()
+
+if(error){
+console.error(error)
+return
+}
+
+document.getElementById("profileName").textContent = student.full_name
+document.getElementById("profileReg").textContent = student.username
+document.getElementById("profileClass").textContent = student.class
+
+}
 
 // ── USER BADGE ──
 function updateUserBadge() {
@@ -41,7 +60,19 @@ function updateUserBadge() {
 
 // ── LOAD MY PAYMENTS ──
 async function loadMyPayments() {
+  let total = 0
+let paid = 0
 
+payments.forEach(p => {
+total += p.amount
+if(p.myStatus?.status === "paid"){
+paid += p.amount
+}
+})
+
+document.getElementById("statTotal").textContent = total
+document.getElementById("statPaid").textContent = paid
+document.getElementById("statDue").textContent = total - paid
   try {
 
     const container =
@@ -337,3 +368,5 @@ document.addEventListener(
   "DOMContentLoaded",
   init
 );
+loadStudentProfile()
+loadMyPayments()
