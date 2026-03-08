@@ -114,6 +114,20 @@ opacity: 0;
 transform: translateY(28px);
 animation: fadeUp 0.9s ease 0.2s forwards;
 }
+.login-card::after{
+content:"";
+position:absolute;
+width:120%;
+height:120%;
+top:-10%;
+left:-10%;
+background:radial-gradient(circle,
+rgba(255,120,90,0.25) 0%,
+rgba(120,0,0,0.15) 40%,
+transparent 70%);
+filter:blur(60px);
+z-index:-1;
+}
 
     /* top gold line */
     .login-card::before {
