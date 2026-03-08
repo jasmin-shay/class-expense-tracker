@@ -1,15 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About - Class Pay</title>
-<link rel="stylesheet" href="home.css">
+
+<title>About Class Pay</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+min-height:100vh;
+background:url("space.jpg");
+background-size:cover;
+background-position:center;
+display:flex;
+flex-direction:column;
+}
+
+/* Navbar */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+color:white;
+}
+
+.logo{
+font-size:22px;
+font-weight:600;
+letter-spacing:2px;
+}
+
+.menu a{
+margin-left:25px;
+text-decoration:none;
+color:white;
+font-size:15px;
+}
+
+.login-btn{
+border:1px solid white;
+padding:6px 16px;
+border-radius:6px;
+}
+
+/* Center section */
+
+.hero{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:40px 20px;
+}
+
+/* About Card */
+
+.about-card{
+background:rgba(90,0,0,0.75);
+backdrop-filter:blur(10px);
+padding:50px;
+border-radius:18px;
+max-width:750px;
+color:white;
+text-align:center;
+}
+
+/* Title */
+
+.about-card h1{
+font-family:'Cinzel',serif;
+font-size:42px;
+letter-spacing:3px;
+margin-bottom:25px;
+}
+
+/* Paragraph */
+
+.about-card p{
+font-size:16px;
+line-height:1.8;
+margin-bottom:15px;
+}
+
+/* Mobile responsive */
+
+@media (max-width:768px){
+
+.navbar{
+flex-direction:column;
+gap:10px;
+}
+
+.menu{
+display:flex;
+gap:15px;
+}
+
+.about-card{
+padding:30px;
+}
+
+.about-card h1{
+font-size:30px;
+}
+
+.about-card p{
+font-size:15px;
+}
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-<div class="card">
+
+<!-- Navbar -->
 
 <div class="navbar">
 
@@ -23,38 +146,43 @@
 
 </div>
 
+
+<!-- Center Card -->
+
 <div class="hero">
+
+<div class="about-card">
 
 <h1>About Class Pay</h1>
 
 <p>
-Class Pay is a class expense management system designed to reduce confusion 
+Class Pay is a class expense management system designed to reduce confusion
 between students and class leaders while collecting money for class activities.
 </p>
 
 <p>
-The leader can create and assign expenses for the class, and students can 
+The leader can create and assign expenses for the class, and students can
 easily view the amount they need to pay.
 </p>
 
 <p>
-Students will be able to clearly see whether their payment is 
-<b>paid or unpaid</b>, which helps maintain transparency in the class.
+Students will be able to clearly see whether their payment is paid or unpaid,
+which helps maintain transparency in the class.
 </p>
 
 <p>
-The system also keeps track of all small payments made by students and 
-automatically calculates the <b>total amount collected</b>.
+The system also keeps track of all small payments made by students and
+automatically calculates the total amount collected.
 </p>
 
 <p>
-This makes it easier for the class leader to manage expenses and for students 
+This makes it easier for the class leader to manage expenses and for students
 to know exactly how much has been contributed and how much is remaining.
 </p>
 
 <p>
-This project was developed in <b>2026</b> as a mini project by students of the 
-<b>Computer Science Department</b>, created by <b>Jasmin and Group</b>.
+This project was developed in 2026 as a mini project by students of the
+Computer Science Department, created by Jasmine and Group.
 </p>
 
 </div>
@@ -62,4 +190,5 @@ This project was developed in <b>2026</b> as a mini project by students of the
 </div>
 
 </body>
+
 </html>
