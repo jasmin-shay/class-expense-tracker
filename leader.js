@@ -451,11 +451,17 @@ async function deleteEvent(eventId) {
 }
 
 // ── NOTIFICATIONS ──
-function toggleNotifPanel() {
-  const panel = document.getElementById('notifPanel');
-  panel.classList.toggle('open');
-}
+function toggleNotifications(){
 
+const panel =
+document.getElementById("notificationPanel")
+
+panel.style.display =
+panel.style.display === "block"
+? "none"
+: "block"
+
+}
 function addNotification(title, sub) {
   const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   notifications.unshift({ title, sub, time });

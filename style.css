@@ -138,3 +138,34 @@ transform:translate(-50%,-50%);
 filter:blur(120px);
 z-index:-2;
 }
+.notify-btn{
+position:relative;
+background:transparent;
+border:none;
+font-size:22px;
+cursor:pointer;
+color:#e6c28b;
+margin-right:12px;
+}
+
+.notify-count{
+position:absolute;
+top:-6px;
+right:-6px;
+background:#ff4d4d;
+color:white;
+font-size:11px;
+padding:2px 6px;
+border-radius:50%;
+}
+.notification-panel{
+position:absolute;
+top:60px;
+right:20px;
+width:260px;
+background:#1a0008;
+border:1px solid #74233b;
+border-radius:10px;
+padding:10px;
+display:none;
+}
