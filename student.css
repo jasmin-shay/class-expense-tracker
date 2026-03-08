@@ -401,8 +401,8 @@ main {
    Off-white glowing box · Maroon fonts
    ════════════════════════════════════════ */
 .payment-card {
-  background: #f3e1d3;
-  border: 1.5px solid #e2c6b2
+  background: linear-gradient(145deg, #e7bfa6, #c48762);
+  border: 1.5px solid #c48762;
   border-radius: 10px;
   padding: 28px 32px;
   margin-bottom: 18px;
