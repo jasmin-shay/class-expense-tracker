@@ -113,3 +113,15 @@ transform:translateY(0);
 opacity:1;
 }
 }
+.card::before{
+    content:"";
+    position:absolute;
+    inset:-20px;
+    background:radial-gradient(
+        circle at center,
+        rgba(255,100,80,0.12),
+        transparent 70%
+    );
+    filter:blur(40px);
+    z-index:-1;
+}
