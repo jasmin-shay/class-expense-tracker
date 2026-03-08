@@ -18,9 +18,11 @@ async function init() {
 
     currentUser = JSON.parse(userStr);
     updateUserBadge();
+    await loadStats();
     loadLeaderProfile();
     await loadEvents();
     subscribeToPayments();
+    
 
   } catch (error) {
     console.error('Initialization error:', error);
@@ -53,7 +55,23 @@ function updateUserBadge() {
     badge.textContent = `${(currentUser.username || '').toUpperCase()} · LEADER`;
   }
 }
+async function loadStats(){
 
+const { data, error } = await supabaseClient
+.from("student_payments")
+.select("*")
+
+if(error) return
+
+const total = data.length
+const paid = data.filter(p=>p.status==="paid").length
+const pending = data.filter(p=>p.status==="pending").length
+
+document.getElementById("statEvents").textContent = total
+document.getElementById("statPaid").textContent = paid
+document.getElementById("statPending").textContent = pending
+
+}
 // ── LOAD EVENTS ──
 async function loadEvents() {
   try {
