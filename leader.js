@@ -22,7 +22,7 @@ async function init() {
     loadLeaderProfile();
     await loadEvents();
     subscribeToPayments();
-    
+    await loadNotifications()
 
   } catch (error) {
     console.error('Initialization error:', error);
@@ -602,3 +602,31 @@ document.addEventListener('click', (e) => {
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', init);
+async function loadNotifications(){
+
+const { data, error } =
+await supabaseClient
+.from("notifications")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(5)
+
+if(error){
+console.error(error)
+return
+}
+
+document.getElementById("notifyCount").textContent =
+data.filter(n=>!n.read).length
+
+const panel =
+document.getElementById("notificationPanel")
+
+panel.innerHTML =
+data.map(n=>`
+<div class="notification-item">
+${n.message}
+</div>
+`).join("")
+
+}

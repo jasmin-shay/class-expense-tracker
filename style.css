@@ -138,32 +138,5 @@ transform:translate(-50%,-50%);
 filter:blur(120px);
 z-index:-2;
 }
-.notify-btn{
-position: relative;
-background: transparent;
-border: none;
-font-size: 20px;
-cursor: pointer;
-margin-right: 15px;
-}
 
-.notify-badge{
-position: absolute;
-top: -6px;
-right: -8px;
 
-background: red;
-color: white;
-
-font-size: 11px;
-font-weight: bold;
-
-width: 18px;
-height: 18px;
-
-display: flex;
-align-items: center;
-justify-content: center;
-
-border-radius: 50%;
-}

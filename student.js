@@ -57,8 +57,8 @@ async function loadStudentProfile() {
 // ── USER BADGE ──
 function updateUserBadge() {
 
-  const badge =
-    document.getElementById("userBadge");
+  const badge = document.getElementById("userBadge");
+  if(!badge)
 
   if (currentUser) {
 

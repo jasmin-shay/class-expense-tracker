@@ -22,16 +22,18 @@
     <span class="header-title">Student Dashboard</span>
   </div>
 
-  <div class="header-right">
+ <div class="header-right">
 
-    <button class="notify-btn" onclick="openNotifications()">
-      🔔
-      <span id="notifyCount" class="notify-count">0</span>
-    </button>
+<button class="notify-btn" onclick="openNotifications()">
+🔔
+<span id="notifyCount" class="notify-count">0</span>
+</button>
 
-    <div id="notificationPanel" class="notification-panel"></div>
+<span class="user-badge" id="userBadge">Loading...</span>
 
-  </div>
+<button class="logout-btn" onclick="handleLogout()">Logout</button>
+
+</div>
 </header> 
 
 <!-- ── MAIN ── -->
