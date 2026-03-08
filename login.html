@@ -3,54 +3,489 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class Expense Tracker - Login</title>
+  <title>ClassPay — Login</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --crimson:     #8B0020;
+      --crimson-light:#a8002a;
+      --deep:        #0a0005;
+      --gold:        #c9a96e;
+      --gold-light:  #e8d5b0;
+      --white:       #ffffff;
+      --off-white:   #f5ede8;
+      --muted:       rgba(245, 237, 232, 0.52);
+      --border:      rgba(139, 0, 32, 0.28);
+      --surface:     rgba(139, 0, 32, 0.07);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--deep);
+      color: var(--off-white);
+      overflow-x: hidden;
+    }
+
+    /* noise */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.3;
+    }
+
+    .bg-gradient {
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 20%, rgba(139,0,32,0.38) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 75%, rgba(100,0,22,0.28) 0%, transparent 55%),
+        linear-gradient(160deg, #0d0005 0%, #1a000a 40%, #0a0003 100%);
+      animation: bgPulse 12s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse { 0%{ filter:brightness(1);} 100%{ filter:brightness(1.1);} }
+
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(90px); pointer-events: none; z-index: -1;
+    }
+    .orb-1 { width:500px;height:500px;top:-120px;left:-160px; background:radial-gradient(circle,rgba(139,0,32,0.26) 0%,transparent 70%); animation:orbFloat 18s ease-in-out infinite alternate; }
+    .orb-2 { width:380px;height:380px;bottom:-80px;right:-100px; background:radial-gradient(circle,rgba(180,20,50,0.16) 0%,transparent 70%); animation:orbFloat 18s ease-in-out infinite alternate; animation-delay:-9s; }
+    @keyframes orbFloat { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(28px,36px) scale(1.07);} }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; justify-content:space-between; align-items:center;
+      padding: 22px 60px;
+      background: rgba(10,0,5,0.38);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(139,0,32,0.2);
+    }
+    .nav-logo {
+      font-family:'Cinzel',serif; font-size:18px; font-weight:700;
+      letter-spacing:5px; color:var(--white); text-decoration:none;
+    }
+    .nav-logo span { color:var(--gold); }
+    .nav-back {
+      font-size:10px; font-weight:600; letter-spacing:2.5px;
+      text-transform:uppercase; color:var(--muted);
+      text-decoration:none; transition:color 0.3s;
+      display:flex; align-items:center; gap:8px;
+    }
+    .nav-back:hover { color:var(--gold-light); }
+    .nav-back svg { transition:transform 0.3s; }
+    .nav-back:hover svg { transform:translateX(-3px); }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 24px 60px;
+    }
+
+    /* ── LOGIN CARD ── */
+    .login-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      max-width: 880px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,0,32,0.15);
+      opacity: 0;
+      transform: translateY(28px);
+      animation: fadeUp 0.9s ease 0.2s forwards;
+    }
+
+    /* top gold line */
+    .login-card::before {
+      content:'';
+      position:absolute; top:0; left:10%; right:10%; height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+      z-index:2;
+    }
+
+    /* ── LEFT — FORM ── */
+    .login-form {
+      background: rgba(10,0,5,0.7);
+      backdrop-filter: blur(20px);
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .form-eyebrow {
+      font-size:9px; font-weight:600; letter-spacing:4px;
+      text-transform:uppercase; color:var(--gold);
+      margin-bottom:16px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .form-eyebrow::after {
+      content:''; flex:1; height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);
+    }
+
+    .login-form h2 {
+      font-family:'Cinzel',serif;
+      font-size:28px; font-weight:700;
+      letter-spacing:3px; color:var(--white);
+      margin-bottom:8px;
+    }
+
+    .login-form > p {
+      font-family:'Cormorant Garamond',serif;
+      font-size:16px; font-style:italic; font-weight:300;
+      color:var(--muted); margin-bottom:36px;
+    }
+
+    .form-group {
+      display:flex; flex-direction:column; gap:8px;
+      margin-bottom:22px;
+    }
+
+    .form-group label {
+      font-size:9px; font-weight:600;
+      letter-spacing:2.5px; text-transform:uppercase;
+      color:var(--gold);
+    }
+
+    .form-group select,
+    .form-group input {
+      font-family:'Montserrat',sans-serif;
+      font-size:13px; font-weight:400;
+      color:var(--off-white);
+      background: rgba(139,0,32,0.08);
+      border: 1px solid rgba(139,0,32,0.3);
+      border-radius: 2px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group select { cursor:pointer; }
+
+    .form-group select option {
+      background: #1a0008;
+      color: var(--off-white);
+    }
+
+    /* custom select arrow */
+    .select-wrap {
+      position:relative;
+    }
+    .select-wrap::after {
+      content:'';
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      width:0; height:0;
+      border-left:4px solid transparent;
+      border-right:4px solid transparent;
+      border-top:5px solid var(--gold);
+      pointer-events:none;
+    }
+
+    .form-group input::placeholder { color:rgba(245,237,232,0.25); }
+
+    .form-group select:focus,
+    .form-group input:focus {
+      border-color: rgba(201,169,110,0.55);
+      background: rgba(139,0,32,0.13);
+    }
+
+    .form-group select:hover,
+    .form-group input:hover {
+      border-color: rgba(139,0,32,0.55);
+    }
+
+    /* password eye toggle */
+    .input-wrap { position:relative; }
+    .input-wrap input { padding-right:44px; }
+    .eye-btn {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer;
+      color:var(--muted); font-size:16px; padding:0;
+      transition:color 0.25s; line-height:1;
+    }
+    .eye-btn:hover { color:var(--gold); }
+
+    .login-btn {
+      font-family:'Montserrat',sans-serif;
+      font-size:10px; font-weight:700;
+      letter-spacing:3px; text-transform:uppercase;
+      color:var(--deep);
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      border:none; border-radius:2px;
+      padding:15px 28px;
+      cursor:pointer; width:100%;
+      margin-top:6px;
+      transition:all 0.35s;
+      position:relative; overflow:hidden;
+      box-shadow:0 8px 28px rgba(201,169,110,0.22);
+    }
+    .login-btn::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,var(--gold),var(--crimson));
+      opacity:0; transition:opacity 0.35s;
+    }
+    .login-btn:hover::before { opacity:1; }
+    .login-btn:hover { color:var(--white); transform:translateY(-2px); box-shadow:0 14px 36px rgba(139,0,32,0.38); }
+    .login-btn span { position:relative; z-index:1; }
+
+    .login-btn.loading span::after {
+      content:' …'; animation:dots 1s steps(3,end) infinite;
+    }
+    @keyframes dots { 0%,100%{content:' .'} 33%{content:' ..'} 66%{content:' ...'} }
+
+    #errorMsg {
+      font-size:11px; letter-spacing:0.5px; font-weight:500;
+      color:#f87171; margin-top:14px; display:none;
+      padding:10px 14px;
+      background:rgba(248,113,113,0.08);
+      border:1px solid rgba(248,113,113,0.2);
+      border-radius:2px;
+    }
+
+    /* ── RIGHT — PANEL ── */
+    .login-panel {
+      background:linear-gradient(145deg, rgba(139,0,32,0.55) 0%, rgba(10,0,5,0.85) 100%);
+      padding: 56px 44px;
+      display:flex; flex-direction:column;
+      justify-content:center; align-items:flex-start;
+      position:relative; overflow:hidden;
+      border-left:1px solid rgba(139,0,32,0.2);
+    }
+
+    /* decorative corner */
+    .panel-corner-tr { position:absolute; top:-1px; right:-1px; width:50px; height:50px; border-top:1.5px solid var(--gold); border-right:1.5px solid var(--gold); }
+    .panel-corner-bl { position:absolute; bottom:-1px; left:-1px; width:50px; height:50px; border-bottom:1.5px solid var(--gold); border-left:1.5px solid var(--gold); }
+
+    /* big decorative letter */
+    .panel-monogram {
+      position:absolute; bottom:-30px; right:-20px;
+      font-family:'Cinzel',serif; font-size:180px; font-weight:700;
+      color:rgba(139,0,32,0.12); letter-spacing:-8px; line-height:1;
+      pointer-events:none; user-select:none;
+    }
+
+    .panel-tag {
+      font-size:9px; font-weight:600; letter-spacing:4px;
+      text-transform:uppercase; color:var(--gold);
+      margin-bottom:20px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .panel-tag::before {
+      content:''; width:28px; height:1px;
+      background:var(--gold);
+    }
+
+    .login-panel h3 {
+      font-family:'Cinzel',serif;
+      font-size:clamp(22px,2.5vw,30px); font-weight:700;
+      letter-spacing:3px; line-height:1.25;
+      color:var(--white); margin-bottom:18px;
+    }
+
+    .login-panel p {
+      font-family:'Cormorant Garamond',serif;
+      font-size:17px; font-style:italic; font-weight:300;
+      color:var(--muted); line-height:1.85;
+      margin-bottom:36px; max-width:280px;
+    }
+
+    /* feature list */
+    .panel-features { display:flex; flex-direction:column; gap:16px; }
+    .pf-item {
+      display:flex; align-items:flex-start; gap:12px;
+    }
+    .pf-dot {
+      width:6px; height:6px; background:var(--gold);
+      transform:rotate(45deg); flex-shrink:0; margin-top:6px;
+    }
+    .pf-item span {
+      font-size:11px; font-weight:500; letter-spacing:0.5px;
+      color:rgba(245,237,232,0.7); line-height:1.7;
+    }
+
+    /* divider line */
+    .panel-divider {
+      width:40px; height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);
+      margin:32px 0;
+    }
+
+    .panel-footer {
+      font-size:9px; letter-spacing:2px;
+      text-transform:uppercase; color:rgba(245,237,232,0.3);
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position:fixed; bottom:24px; right:24px;
+      background:rgba(10,0,5,0.92);
+      border:1px solid rgba(201,169,110,0.4);
+      color:var(--off-white);
+      padding:12px 22px; border-radius:2px;
+      font-size:12px; letter-spacing:0.5px;
+      display:none; z-index:999;
+      backdrop-filter:blur(12px);
+      box-shadow:0 8px 28px rgba(0,0,0,0.4);
+      animation:fadeUp 0.3s ease;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      nav { padding:16px 24px; }
+      .login-card { grid-template-columns:1fr; max-width:440px; }
+      .login-panel { display:none; }
+      .login-form { padding:44px 32px; }
+    }
+    @media (max-width: 420px) {
+      .login-form { padding:36px 24px; }
+      .login-form h2 { font-size:22px; }
+    }
+  </style>
 </head>
 <body>
-  <div class="login-wrapper">
+
+  <div class="bg-gradient"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="index.html" class="nav-logo">CLASS<span>PAY</span></a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Home
+    </a>
+  </nav>
+
+  <!-- PAGE -->
+  <div class="page">
     <div class="login-card">
-      <!-- LEFT SIDE FORM -->
+
+      <!-- LEFT: FORM -->
       <div class="login-form">
+        <div class="form-eyebrow">Secure Access</div>
         <h2>Welcome Back</h2>
         <p>Access your class expense dashboard</p>
 
         <div class="form-group">
           <label for="role">Role</label>
-          <select id="role">
-            <option value="student">Student</option>
-            <option value="leader">Class Leader</option>
-            <option value="teacher">Teacher</option>
-          </select>
+          <div class="select-wrap">
+            <select id="role">
+              <option value="student">Student</option>
+              <option value="leader">Class Leader</option>
+              <option value="teacher">Teacher</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="username">Username / Register Number</label>
-          <input type="text" id="username" placeholder="e.g., 1001 or admin" />
+          <input type="text" id="username" placeholder="e.g., 1001 or admin" autocomplete="username"/>
         </div>
 
         <div class="form-group">
           <label for="password">Password / DOB (DDMMYYYY)</label>
-          <input type="password" id="password" placeholder="••••••••" />
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="eye-btn" type="button" onclick="togglePwd(this)" aria-label="Toggle password">👁</button>
+          </div>
         </div>
 
-        <button id="loginBtn" class="login-btn" onclick="handleLogin()">Login</button>
+        <button id="loginBtn" class="login-btn" onclick="handleLogin()">
+          <span>Login</span>
+        </button>
 
-        <div id="errorMsg" style="color: #f87171; margin-top: 12px; font-size: 0.85rem; display: none;"></div>
+        <div id="errorMsg"></div>
       </div>
 
-      <!-- RIGHT SIDE IMAGE -->
-      <div class="login-image">
-        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500" alt="team" />
+      <!-- RIGHT: PANEL -->
+      <div class="login-panel">
+        <div class="panel-corner-tr"></div>
+        <div class="panel-corner-bl"></div>
+        <div class="panel-monogram">CP</div>
+
+        <div class="panel-tag">ClassPay</div>
+        <h3>Class Expense<br/>Made Simple</h3>
+        <p>Track contributions, manage funds, and keep every student informed — all in one place.</p>
+
+        <div class="panel-features">
+          <div class="pf-item">
+            <div class="pf-dot"></div>
+            <span>Instant payment status for every student</span>
+          </div>
+          <div class="pf-item">
+            <div class="pf-dot"></div>
+            <span>Automatic calculations — no manual work</span>
+          </div>
+          <div class="pf-item">
+            <div class="pf-dot"></div>
+            <span>Full transparency for class leaders & teachers</span>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+        <p class="panel-footer">CS Department · Mini Project · 2026</p>
       </div>
+
     </div>
   </div>
 
-  <div id="toast" style="position: fixed; bottom: 20px; right: 20px; background: #1a1e2a; border: 1px solid #5b7cfa; color: #e8eaf0; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 999;"></div>
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <script>
+    function togglePwd(btn) {
+      const inp = btn.previousElementSibling;
+      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+      else { inp.type = 'password'; btn.textContent = '👁'; }
+    }
+
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', duration);
+    }
+
+    function showError(msg) {
+      const e = document.getElementById('errorMsg');
+      e.textContent = msg; e.style.display = 'block';
+    }
+
+    function clearError() {
+      const e = document.getElementById('errorMsg');
+      e.style.display = 'none'; e.textContent = '';
+    }
+
+    // stub — replaced by your auth.js
+    function handleLogin() {
+      clearError();
+      const btn = document.getElementById('loginBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+      // your auth.js will override this
+      setTimeout(() => { btn.classList.remove('loading'); btn.disabled = false; }, 2000);
+    }
+  </script>
 
   <script src="supabase.js"></script>
   <script src="auth.js"></script>
 </body>
 </html>
-
