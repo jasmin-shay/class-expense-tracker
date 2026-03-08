@@ -28,25 +28,30 @@ async function init() {
     showToast("Error loading dashboard", "error");
   }
 }
-async function loadStudentProfile(){
+async function loadStudentProfile() {
 
-const username = currentUser.username
+  if (!currentUser) return;
 
-const { data: student, error } = await supabaseClient
-.from("students")
-.select("*")
-.eq("username", username)
-.single()
+  document.getElementById("profileName").textContent =
+    currentUser.full_name;
 
-if(error){
-console.error(error)
-return
-}
+  document.getElementById("profileReg").textContent =
+    currentUser.username;
 
-document.getElementById("profileName").textContent = student.full_name
-document.getElementById("profileReg").textContent = student.username
-document.getElementById("profileClass").textContent = student.class
+  document.getElementById("profileClass").textContent =
+    currentUser.class;
 
+
+  // avatar initials
+  const initials =
+    currentUser.full_name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase();
+
+  document.getElementById("profileAvatar").textContent =
+    initials;
 }
 
 // ── USER BADGE ──
