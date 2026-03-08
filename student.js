@@ -17,7 +17,7 @@ async function init() {
 
     updateUserBadge();
 
-    await loadStudentProfile();   // ADD THIS
+    await loadStudentProfile();
 
     await loadMyPayments();
 
@@ -28,6 +28,8 @@ async function init() {
     showToast("Error loading dashboard", "error");
   }
 }
+
+// ── LOAD STUDENT PROFILE ──
 async function loadStudentProfile() {
 
   if (!currentUser) return;
@@ -41,8 +43,6 @@ async function loadStudentProfile() {
   document.getElementById("profileClass").textContent =
     currentUser.class;
 
-
-  // avatar initials
   const initials =
     currentUser.full_name
       .split(" ")
@@ -56,37 +56,31 @@ async function loadStudentProfile() {
 
 // ── USER BADGE ──
 function updateUserBadge() {
-  const badge = document.getElementById("userBadge");
+
+  const badge =
+    document.getElementById("userBadge");
 
   if (currentUser) {
+
     badge.textContent =
       `${currentUser.username.toUpperCase()} · STUDENT`;
+
   }
-}
-
-function openNotifications(){
-
-const panel =
-document.getElementById("notificationPanel")
-
-panel.style.display =
-panel.style.display === "block"
-? "none"
-: "block"
 
 }
-// ── LOAD MY PAYMENTS ──
+
+// ── LOAD PAYMENTS ──
 async function loadMyPayments() {
 
   try {
 
-    const container = document.getElementById("paymentsContainer");
+    const container =
+      document.getElementById("paymentsContainer");
 
     container.innerHTML =
       `<div class="loading">Loading your payments...</div>`;
 
 
-    // Get assignments for this student
     const { data: assignments, error } =
       await supabaseClient
         .from("student_payments")
@@ -105,11 +99,10 @@ async function loadMyPayments() {
     }
 
 
-    // Get payment IDs
-    const paymentIds = assignments.map(p => p.payment_id);
+    const paymentIds =
+      assignments.map(p => p.payment_id);
 
 
-    // Get payment details
     const { data: payments, error: paymentError } =
       await supabaseClient
         .from("payments")
@@ -120,7 +113,6 @@ async function loadMyPayments() {
     if (paymentError) throw paymentError;
 
 
-    // Merge payment + status
     myPayments = payments.map(payment => {
 
       const myStatus =
@@ -134,7 +126,7 @@ async function loadMyPayments() {
     });
 
 
-    // ── CALCULATE TOTAL / PAID / DUE ──
+    // ── TOTAL CALCULATION ──
     let total = 0;
     let paid = 0;
 
@@ -156,9 +148,7 @@ async function loadMyPayments() {
     document.getElementById("statDue").textContent = "₹" + due;
 
 
-    // Render payment cards
     renderPayments();
-
 
   } catch (error) {
 
@@ -181,7 +171,7 @@ function renderPayments() {
     myPayments.map((payment, index) => {
 
       const status =
-        payment.myStatus.status;
+        payment.myStatus?.status || "unpaid";
 
       return `
 
@@ -190,6 +180,7 @@ function renderPayments() {
         <div class="payment-header">
 
           <div>
+
             <div class="payment-reason">
               ${payment.reason}
             </div>
@@ -247,7 +238,7 @@ function payWithRazorpay(index) {
 
   const options = {
 
-    key: "rzp_live_SOncgc69x3fR1N ", // Replace with your Razorpay key
+    key: "rzp_live_SOncgc69x3fR1N", // FIXED (removed extra space)
 
     amount: payment.amount * 100,
 
@@ -318,7 +309,7 @@ async function markAsPaid(index) {
 }
 
 
-// ── REALTIME UPDATES ──
+// ── REALTIME ──
 function subscribeToMyPayments() {
 
   supabaseClient
@@ -346,7 +337,7 @@ function subscribeToMyPayments() {
 }
 
 
-// ── FORMAT DATE ──
+// ── DATE FORMAT ──
 function formatDate(dateStr) {
 
   const date =
@@ -399,3 +390,21 @@ document.addEventListener(
   "DOMContentLoaded",
   init
 );
+
+
+// ── NOTIFICATION BADGE ──
+function updateNotify(count){
+
+const badge =
+document.getElementById("notifyCount")
+
+if(!badge) return
+
+if(count > 0){
+badge.style.display = "flex"
+badge.textContent = count
+}else{
+badge.style.display = "none"
+}
+
+}
