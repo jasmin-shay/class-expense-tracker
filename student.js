@@ -247,7 +247,7 @@ function payWithRazorpay(index) {
 
   const options = {
 
-    key: "rzp_test_1234567890", // Replace with your Razorpay key
+    key: "rzp_live_SOncgc69x3fR1N ", // Replace with your Razorpay key
 
     amount: payment.amount * 100,
 
