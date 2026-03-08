@@ -17,6 +17,8 @@ async function init() {
 
     updateUserBadge();
 
+    await loadStudentProfile();   // ADD THIS
+
     await loadMyPayments();
 
     subscribeToMyPayments();
@@ -28,7 +30,7 @@ async function init() {
 }
 async function loadStudentProfile(){
 
-const username = localStorage.getItem("username")
+const username = currentUser.username
 
 const { data: student, error } = await supabaseClient
 .from("students")
@@ -60,29 +62,16 @@ function updateUserBadge() {
 
 // ── LOAD MY PAYMENTS ──
 async function loadMyPayments() {
-  let total = 0
-let paid = 0
 
-payments.forEach(p => {
-total += p.amount
-if(p.myStatus?.status === "paid"){
-paid += p.amount
-}
-})
-
-document.getElementById("statTotal").textContent = total
-document.getElementById("statPaid").textContent = paid
-document.getElementById("statDue").textContent = total - paid
   try {
 
-    const container =
-      document.getElementById("paymentsContainer");
+    const container = document.getElementById("paymentsContainer");
 
     container.innerHTML =
       `<div class="loading">Loading your payments...</div>`;
 
 
-    // Get assigned payments
+    // Get assignments for this student
     const { data: assignments, error } =
       await supabaseClient
         .from("student_payments")
@@ -101,10 +90,11 @@ document.getElementById("statDue").textContent = total - paid
     }
 
 
-    const paymentIds =
-      assignments.map(p => p.payment_id);
+    // Get payment IDs
+    const paymentIds = assignments.map(p => p.payment_id);
 
 
+    // Get payment details
     const { data: payments, error: paymentError } =
       await supabaseClient
         .from("payments")
@@ -115,20 +105,45 @@ document.getElementById("statDue").textContent = total - paid
     if (paymentError) throw paymentError;
 
 
-    myPayments =
-      payments.map(payment => {
+    // Merge payment + status
+    myPayments = payments.map(payment => {
 
-        const myStatus =
-          assignments.find(a => a.payment_id === payment.id);
+      const myStatus =
+        assignments.find(a => a.payment_id === payment.id);
 
-        return {
-          ...payment,
-          myStatus
-        };
-      });
+      return {
+        ...payment,
+        myStatus
+      };
+
+    });
 
 
+    // ── CALCULATE TOTAL / PAID / DUE ──
+    let total = 0;
+    let paid = 0;
+
+    myPayments.forEach(p => {
+
+      total += p.amount;
+
+      if (p.myStatus?.status === "paid") {
+        paid += p.amount;
+      }
+
+    });
+
+    const due = total - paid;
+
+
+    document.getElementById("statTotal").textContent = "₹" + total;
+    document.getElementById("statPaid").textContent = "₹" + paid;
+    document.getElementById("statDue").textContent = "₹" + due;
+
+
+    // Render payment cards
     renderPayments();
+
 
   } catch (error) {
 
@@ -137,6 +152,7 @@ document.getElementById("statDue").textContent = total - paid
     showToast("Failed to load payments", "error");
 
   }
+
 }
 
 
@@ -368,5 +384,3 @@ document.addEventListener(
   "DOMContentLoaded",
   init
 );
-loadStudentProfile()
-loadMyPayments()
