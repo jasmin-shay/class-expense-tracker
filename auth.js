@@ -68,9 +68,7 @@ if (!users) {
         case 'leader':
           window.location.href = 'leader.html';
           break;
-        case 'teacher':
-          window.location.href = 'teacher.html';
-          break;
+        
       }
     }, 500);
   } catch (error) {
@@ -119,9 +117,7 @@ function checkExistingSession() {
     else if (user.role === "leader") {
       window.location.href = "leader.html";
     } 
-    else if (user.role === "teacher") {
-      window.location.href = "teacher.html";
-    }
+    
 
   } catch (e) {
     console.error("Session error:", e);
