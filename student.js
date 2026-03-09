@@ -386,11 +386,38 @@ function showToast(message, type="info") {
 }
 
 
-// ── START APP ──
-document.addEventListener(
-  "DOMContentLoaded",
-  init
-);
+// — START APP —
+document.addEventListener("DOMContentLoaded", () => {
+
+  init();
+
+  // Start realtime notification listener
+  supabaseClient
+  .channel("notifications-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "INSERT",
+      schema: "public",
+      table: "notifications"
+    },
+    (payload) => {
+
+      console.log("New notification:", payload.new.message);
+
+      showToast(payload.new.message, "success");
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("ClassPay", {
+          body: payload.new.message
+        });
+      }
+
+    }
+  )
+  .subscribe();
+
+});
 supabaseClient
 .channel("notifications-live")
 .on(

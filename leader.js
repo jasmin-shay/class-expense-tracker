@@ -541,21 +541,38 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', init);
-async function loadNotifications(){
+// — START APP —
+document.addEventListener("DOMContentLoaded", () => {
 
-const { data, error } =
-await supabaseClient
-.from("notifications")
-.select("*")
-.order("created_at",{ascending:false})
-.limit(5)
+  init();
 
-if(error){
-console.error(error)
-return
-}
+  // Start realtime notification listener
+  supabaseClient
+  .channel("notifications-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "INSERT",
+      schema: "public",
+      table: "notifications"
+    },
+    (payload) => {
+
+      console.log("New notification:", payload.new.message);
+
+      showToast(payload.new.message, "success");
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("ClassPay", {
+          body: payload.new.message
+        });
+      }
+
+    }
+  )
+  .subscribe();
+
+});
 supabaseClient
 .channel("notifications-live")
 .on(
