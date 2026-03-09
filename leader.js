@@ -573,6 +573,11 @@ document.addEventListener("DOMContentLoaded", () => {
   .subscribe();
 
 });
+
+async function init() 
+{
+  startNotificationListener();
+}
 supabaseClient
 .channel("notifications-live")
 .on(
@@ -609,5 +614,31 @@ data.map(n=>`
 ${n.message}
 </div>
 `).join("")
+function startNotificationListener(){
+
+  supabaseClient
+  .channel("notifications-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "INSERT",
+      schema: "public",
+      table: "notifications"
+    },
+    (payload) => {
+
+      console.log("New notification:", payload.new.message);
+
+      showToast(payload.new.message, "success");
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("ClassPay", {
+          body: payload.new.message
+        });
+      }
+
+    }
+  )
+  .subscribe();
 
 }
