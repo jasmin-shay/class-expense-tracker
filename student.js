@@ -257,6 +257,7 @@ function payWithRazorpay(index) {
     handler: async function () {
 
       await markAsPaid(index);
+      await loadMyPayments();
 
     },
 
@@ -291,8 +292,7 @@ async function markAsPaid(index) {
       .update({
         status: "paid"
       })
-      .eq("payment_id", payment.id)
-      .eq("register_num", currentUser.username)
+      .eq("id", myStatus.id)
 
     if (error) throw error
 
@@ -303,6 +303,7 @@ async function markAsPaid(index) {
   } catch (error) {
 
     console.error("Payment update error:", error)
+
     showToast("Failed to update payment", "error")
 
   }
