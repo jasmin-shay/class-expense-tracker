@@ -8,6 +8,14 @@ async function handleLogin() {
   const errorMsg = document.getElementById('errorMsg');
   const loginBtn = document.getElementById('loginBtn');
 
+  if ("Notification" in window) {
+  Notification.requestPermission().then(function(permission) {
+    if (permission === "granted") {
+      console.log("Notification permission granted");
+    }
+  });
+}
+
   // Validation
   if (!username || !password) {
     showAuthError('Please fill in all fields');

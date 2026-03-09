@@ -391,21 +391,27 @@ document.addEventListener(
   "DOMContentLoaded",
   init
 );
+supabaseClient
+.channel("notifications-live")
+.on(
+  "postgres_changes",
+  {
+    event: "INSERT",
+    schema: "public",
+    table: "notifications"
+  },
+  (payload) => {
 
+    console.log("New notification:", payload.new.message)
 
-// ── NOTIFICATION BADGE ──
-function updateNotify(count){
+    showPopupNotification(
+      "ClassPay",
+      payload.new.message
+    )
 
-const badge =
-document.getElementById("notifyCount")
+    loadNotifications()
 
-if(!badge) return
+  }
+)
+.subscribe();
 
-if(count > 0){
-badge.style.display = "flex"
-badge.textContent = count
-}else{
-badge.style.display = "none"
-}
-
-}

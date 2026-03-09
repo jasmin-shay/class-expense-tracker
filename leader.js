@@ -5,7 +5,6 @@
 let currentUser = null;
 let allEvents = [];
 let editingEventId = null;
-let notifications = [];
 
 // ── INITIALIZATION ──
 async function init() {
@@ -22,7 +21,6 @@ async function init() {
     loadLeaderProfile();
     await loadEvents();
     subscribeToPayments();
-    await loadNotifications()
 
   } catch (error) {
     console.error('Initialization error:', error);
@@ -450,64 +448,7 @@ async function deleteEvent(eventId) {
   }
 }
 
-// ── NOTIFICATIONS ──
-function toggleNotifications(){
 
-const panel =
-document.getElementById("notificationPanel")
-
-panel.style.display =
-panel.style.display === "block"
-? "none"
-: "block"
-
-}
-function addNotification(title, sub) {
-  const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  notifications.unshift({ title, sub, time });
-  renderNotifications();
-  updateNotifCount();
-
-  // Bell shake
-  const bell = document.getElementById('notifBell');
-  bell.style.animation = 'none';
-  setTimeout(() => {
-    bell.style.animation = '';
-    bell.classList.add('ring');
-    setTimeout(() => bell.classList.remove('ring'), 600);
-  }, 10);
-}
-
-function renderNotifications() {
-  const list = document.getElementById('notifList');
-  if (notifications.length === 0) {
-    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
-    return;
-  }
-  list.innerHTML = notifications.map(n => `
-    <div class="notif-item">
-      <div class="notif-item-title">${escapeHtml(n.title)}</div>
-      <div class="notif-item-sub">${escapeHtml(n.sub)}</div>
-      <div class="notif-item-time">${n.time}</div>
-    </div>
-  `).join('');
-}
-
-function updateNotifCount() {
-  const badge = document.getElementById('notifCount');
-  if (notifications.length > 0) {
-    badge.textContent = notifications.length > 9 ? '9+' : notifications.length;
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-function clearNotifications() {
-  notifications = [];
-  renderNotifications();
-  updateNotifCount();
-}
 
 // ── SUBSCRIBE TO REAL-TIME UPDATES ──
 function subscribeToPayments() {
@@ -615,8 +556,31 @@ if(error){
 console.error(error)
 return
 }
+supabaseClient
+.channel("notifications-live")
+.on(
+  "postgres_changes",
+  {
+    event: "INSERT",
+    schema: "public",
+    table: "notifications"
+  },
+  (payload) => {
 
-document.getElementById("notifyCount").textContent =
+    console.log("New notification:", payload.new.message)
+
+    showPopupNotification(
+      "ClassPay",
+      payload.new.message
+    )
+
+    loadNotifications()
+
+  }
+)
+.subscribe();
+
+document.getElementById("notifCount").textContent =
 data.filter(n=>!n.read).length
 
 const panel =
