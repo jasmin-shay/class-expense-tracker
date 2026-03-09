@@ -255,9 +255,8 @@ function payWithRazorpay(index) {
     },
 
     handler: async function () {
-
+      showToast("Payment successful! Updating status...", "success");
       await markAsPaid(index);
-      await loadMyPayments();
 
     },
 

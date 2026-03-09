@@ -22,10 +22,7 @@
   </div>
 <div class="header-right">
 
-  <button class="notify-btn" onclick="toggleNotifications()">
-    🔔
-    <span id="notifyCount" class="notify-count">0</span>
-  </button>
+ 
 
   <div id="notificationPanel" class="notification-panel"></div>
 
@@ -128,22 +125,6 @@
 
 </main>
 
-<!-- NOTIFICATION BELL -->
-<button class="notif-bell" id="notifBell" onclick="toggleNotifPanel()" title="Notifications">
-  🔔
-  <span class="notif-count" id="notifCount" style="display:none">0</span>
-</button>
-
-<!-- NOTIFICATION PANEL -->
-<div class="notif-panel" id="notifPanel">
-  <div class="notif-panel-header">
-    <span>Notifications</span>
-    <button onclick="clearNotifications()" class="clear-btn">Clear all</button>
-  </div>
-  <div id="notifList">
-    <div class="notif-empty">No notifications yet</div>
-  </div>
-</div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal" onclick="closeEditModal(event)">
