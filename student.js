@@ -385,6 +385,12 @@ function showToast(message, type="info") {
 
 }
 
+// ── POPUP NOTIFICATION ──
+function showPopupNotification(title, message) {
+  // Simple alert for now, can be enhanced to a custom modal
+  alert(`${title}: ${message}`);
+}
+
 
 // — START APP —
 document.addEventListener("DOMContentLoaded", () => {
@@ -405,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("New notification:", payload.new.message);
 
-      showToast(payload.new.message, "success");
+      showPopupNotification("ClassPay", payload.new.message);
 
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("ClassPay", {
@@ -418,55 +424,3 @@ document.addEventListener("DOMContentLoaded", () => {
   .subscribe();
 
 });
-
-supabaseClient
-.channel("notifications-live")
-.on(
-  "postgres_changes",
-  {
-    event: "INSERT",
-    schema: "public",
-    table: "notifications"
-  },
-  (payload) => {
-
-    console.log("New notification:", payload.new.message)
-
-    showPopupNotification(
-      "ClassPay",
-      payload.new.message
-    )
-
-    loadNotifications()
-
-  }
-)
-.subscribe();
-function startNotificationListener(){
-
-  supabaseClient
-  .channel("notifications-live")
-  .on(
-    "postgres_changes",
-    {
-      event: "INSERT",
-      schema: "public",
-      table: "notifications"
-    },
-    (payload) => {
-
-      console.log("New notification:", payload.new.message);
-
-      showToast(payload.new.message, "success");
-
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("ClassPay", {
-          body: payload.new.message
-        });
-      }
-
-    }
-  )
-  .subscribe();
-
-}

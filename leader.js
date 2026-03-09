@@ -53,7 +53,7 @@ function updateUserBadge() {
     badge.textContent = `${(currentUser.username || '').toUpperCase()} · LEADER`;
   }
 }
-async function loadStats(){
+async function loadStats() {
 
 const { data, error } = await supabaseClient
 .from("student_payments")
@@ -509,6 +509,12 @@ function showToast(message, type = 'info') {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+// ── POPUP NOTIFICATION ──
+function showPopupNotification(title, message) {
+  // Simple alert for now, can be enhanced to a custom modal
+  alert(`${title}: ${message}`);
+}
+
 // ── HELPERS ──
 function escapeHtml(text) {
   const div = document.createElement('div');
@@ -560,7 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("New notification:", payload.new.message);
 
-      showToast(payload.new.message, "success");
+      showPopupNotification("ClassPay", payload.new.message);
 
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("ClassPay", {
@@ -573,72 +579,3 @@ document.addEventListener("DOMContentLoaded", () => {
   .subscribe();
 
 });
-
-async function init() 
-{
-  startNotificationListener();
-}
-supabaseClient
-.channel("notifications-live")
-.on(
-  "postgres_changes",
-  {
-    event: "INSERT",
-    schema: "public",
-    table: "notifications"
-  },
-  (payload) => {
-
-    console.log("New notification:", payload.new.message)
-
-    showPopupNotification(
-      "ClassPay",
-      payload.new.message
-    )
-
-    loadNotifications()
-
-  }
-)
-.subscribe();
-
-document.getElementById("notifCount").textContent =
-data.filter(n=>!n.read).length
-
-const panel =
-document.getElementById("notificationPanel")
-
-panel.innerHTML =
-data.map(n=>`
-<div class="notification-item">
-${n.message}
-</div>
-`).join("")
-function startNotificationListener(){
-
-  supabaseClient
-  .channel("notifications-live")
-  .on(
-    "postgres_changes",
-    {
-      event: "INSERT",
-      schema: "public",
-      table: "notifications"
-    },
-    (payload) => {
-
-      console.log("New notification:", payload.new.message);
-
-      showToast(payload.new.message, "success");
-
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("ClassPay", {
-          body: payload.new.message
-        });
-      }
-
-    }
-  )
-  .subscribe();
-
-}
