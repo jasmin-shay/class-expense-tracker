@@ -211,12 +211,14 @@ function renderPayments() {
         <div style="display:flex; gap:10px; margin-top:10px;">
 
           ${
-            status !== "paid"
+            status === "unpaid"
             ? `<button onclick="payWithRazorpay(${index})"
                 class="pay-btn">
                 Pay Now
               </button>`
-            : `<span style="color:green;">✓ Paid</span>`
+              : status === "pending"
+              ? `<span style="color:orange;font-weight:bold;">⏳ Pending</span>`
+            : `<span style="color:green;font-weight:bold;">✓ Paid</span>`
           }
 
         </div>
@@ -247,6 +249,10 @@ function payWithRazorpay(index) {
     name: "Class Expense",
 
     description: payment.reason,
+    notes : {
+      payment_id: payment.id,
+      register_num: currentUser.username
+    },
 
     handler: async function () {
 
@@ -275,34 +281,29 @@ function payWithRazorpay(index) {
 // ── MARK PAYMENT ──
 async function markAsPaid(index) {
 
-  const payment =
-    myPayments[index];
-
-  const myStatus =
-    payment.myStatus;
+  const payment = myPayments[index]
+  const myStatus = payment.myStatus
 
   try {
 
-    const { error } =
-      await supabaseClient
-        .from("student_payments")
-        .update({
-          status: "pending",
-          payment_date: new Date().toISOString()
-        })
-        .eq("id", myStatus.id);
+    const { error } = await supabaseClient
+      .from("student_payments")
+      .update({
+        status: "paid"
+      })
+      .eq("payment_id", payment.id)
+      .eq("register_num", currentUser.username)
 
-    if (error) throw error;
+    if (error) throw error
 
-    showToast("Payment sent for approval", "success");
+    showToast("Payment successful", "success")
 
-    await loadMyPayments();
+    await loadMyPayments()
 
   } catch (error) {
 
-    console.error("Payment update error:", error);
-
-    showToast("Failed to update payment", "error");
+    console.error("Payment update error:", error)
+    showToast("Failed to update payment", "error")
 
   }
 
